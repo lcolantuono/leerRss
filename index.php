@@ -45,12 +45,45 @@
 
 			$url = "http://neuquenalinstante.com.ar/category/actualidad/feed/";
 			$articulos = simplexml_load_string(file_get_contents($url));
+			function lectorRSS($url,$elementos=6,$inicio=0) {
+		    $cache_version = "cache/" . basename($url);
+		    $archivo = fopen($url, 'r');
+		    stream_set_blocking($archivo,true);
+		    stream_set_timeout($archivo, 5);
+		    $datos = stream_get_contents($archivo);
+		    $status = stream_get_meta_data($archivo);
+		    fclose($archivo);
+		    if ($status['timed_out']) {
+			  $noticias = simplexml_load_file($cache_version);
+		    }
+		    else {
+			  $archivo_cache = fopen($cache_version, 'w');
+			  fwrite($archivo_cache, $datos);
+			  fclose($archivo_cache);
+			  $noticias = simplexml_load_string($datos);
+		    }
+			$ContadorNoticias=1;
+		  	echo "<ul>";
+			foreach ($noticias->channel->item as $noticia) {
+			if($ContadorNoticias<$elementos){
+				if($ContadorNoticias>$inicio){
+					echo "<li><a href='".$noticia->link."' target='_blank' class='tooltip' title='".utf8_decode($noticia->title)."'>";
+					echo utf8_decode($noticia->title);
+					echo "</a></li>";
+				}
+				$ContadorNoticias = $ContadorNoticias + 1;
+		 		}
+			}
+			echo "</ul>";
+			}
+		
+		//lectorRSS($url);
 			$num_noticia=1;
 			$max_noticias=10;
 			foreach($articulos->channel->item as $noticia){ ?>
 			    <article>
-			        <h1><a href="<? echo $noticia->link; ?>"><? echo $noticia->title; ?></a></h1>
-			        <? echo $noticia->description; ?>
+			        <h1><a href="<? //echo $noticia->link; ?>"><? echo $noticia->title; ?></a></h1>
+			        <? //echo $noticia->description; ?>
 			    </article>
 			    <? $num_noticia++;
 			    if($num_noticia > $max_noticias){
