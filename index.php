@@ -18,7 +18,7 @@
         <div data-role="header" data-position="fixed">
         <a href="#nav-panel" data-role="button" data-icon="bars">Menu</a>
 		<a href="index.php" data-role="button" data-icon="home">Inicio</a>
-            <h1>DocVox - Subir un audio</h1>
+            <h1>Leer RSS</h1>
         </div><!-- /header -->
 
         <div data-role="content">
@@ -41,7 +41,22 @@
 		    <div class="showImage"></div>
 			
 			<a data-rel="back" data-role="button" data-icon="star" data-theme="b">Volver</a>
-			
+			<?php
+
+			$url = "http://neuquenalinstante.com.ar/category/actualidad/feed/";
+			$articulos = simplexml_load_string(file_get_contents($url));
+			$num_noticia=1;
+			$max_noticias=10;
+			foreach($articulos->channel->item as $noticia){ ?>
+			    <article>
+			        <h1><a href="<? echo $noticia->link; ?>"><? echo $noticia->title; ?></a></h1>
+			        <? echo $noticia->description; ?>
+			    </article>
+			    <? $num_noticia++;
+			    if($num_noticia > $max_noticias){
+			        break;
+			    }
+			}?>
         </div><!-- /content -->
 		
         <div data-role="footer">
@@ -56,25 +71,8 @@
 			</ul>
 		</div><!-- /panel -->
 
-<?php
-
-$url = "http://neuquenalinstante.com.ar/category/actualidad/feed/";
-$articulos = simplexml_load_string(file_get_contents($url));
-$num_noticia=1;
-$max_noticias=10;
-foreach($articulos->channel->item as $noticia){ ?>
-    <article>
-        <h1><a href="<? echo $noticia->link; ?>"><? echo $noticia->title; ?></a></h1>
-        <? echo $noticia->description; ?>
-    </article>
-    <? $num_noticia++;
-    if($num_noticia > $max_noticias){
-        break;
-    }
-}
-
-
-function lectorRSS($url,$elementos=6,$inicio=0) {
+<?php 
+/*function lectorRSS($url,$elementos=6,$inicio=0) {
 	    $cache_version = "cache/" . basename($url);
 	    $archivo = fopen($url, 'r');
 	    stream_set_blocking($archivo,true);
@@ -104,11 +102,11 @@ function lectorRSS($url,$elementos=6,$inicio=0) {
  	}
 	}
 	echo "</ul>";
-}
+}*/
 
-lectorRSS($url);
+//lectorRSS($url);
 
-lectorRSS('http://feeds.feedburner.com/webintenta/WVpB',5);
+//lectorRSS('http://feeds.feedburner.com/webintenta/WVpB',5);
 ?>
 </div>
 </body></html>
